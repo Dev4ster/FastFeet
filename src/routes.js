@@ -17,11 +17,18 @@ routes.use(authMiddleware);
 routes.put('/users', UserController.update);
 
 routes.use(permissonMiddleware);
-routes.post('/recipient', RecipientController.store);
 
 // details
-routes.get('/recipient/details', RecipientDetailsController.index);
-routes.post('/recipient/details', RecipientDetailsController.store);
-routes.put('/recipient/details/:id', RecipientDetailsController.update);
-routes.delete('/recipient/details/:id', RecipientDetailsController.delete);
+routes.get('/recipients/details/:id', RecipientDetailsController.show);
+routes.get('/recipients/details', RecipientDetailsController.index);
+routes.post('/recipients/details', RecipientDetailsController.store);
+routes.put('/recipients/details/:id', RecipientDetailsController.update);
+routes.delete('/recipients/details/:id', RecipientDetailsController.delete);
+
+// RECIPIENT
+routes.get('/recipients', RecipientController.index);
+routes.post('/recipients', RecipientController.store);
+routes.put('/recipients/:id', RecipientController.update);
+routes.delete('/recipients/:id', RecipientController.delete);
+routes.get('/recipients/:id', RecipientController.show);
 export default routes;

@@ -62,9 +62,21 @@ class RecipientDetailsController {
 
   async delete(req, res) {
     const { id } = req.params;
-    const deletou_mesmo = await SequelizeDeletePromise(RecipientDetails, {
-      where: { id },
-    });
+    try {
+      const deleted = await SequelizeDeletePromise(RecipientDetails, {
+        where: { id },
+      });
+      return res.json({ current: `detail id ${id}`, deleted });
+    } catch (e) {
+      return res.status(500).json({
+        error: 'you cannot delete data that is being used by another table',
+        error_trace: (e.original.detail || e.parent.detail).replace(
+          /[\\"]/g,
+          ''
+        ),
+      });
+    }
+
     // RecipientDetails.destroy({ where: { id } })
     //   .then(del => {
     //     console.log(del);
@@ -72,7 +84,16 @@ class RecipientDetailsController {
     //   .catch(err => {
     //     console.log(err);
     //   });
-    return res.json({ message: `detail id ${id} deleted`, deletou_mesmo });
+  }
+
+  async show(req, res) {
+    const { id } = req.params;
+    try {
+      const recipientDetails = await RecipientDetails.findByPk(id);
+      return res.json(recipientDetails);
+    } catch (e) {
+      return res.json(e);
+    }
   }
 }
 export default new RecipientDetailsController();
