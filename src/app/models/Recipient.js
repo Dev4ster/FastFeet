@@ -17,6 +17,15 @@ class Recipient extends Model {
         sequelize,
       }
     );
+
+    return this;
+  }
+
+  static associate(models) {
+    this.belongsTo(models.RecipientDetails, {
+      foreignKey: 'id_recipient_details',
+      as: 'detail',
+    });
   }
 }
 

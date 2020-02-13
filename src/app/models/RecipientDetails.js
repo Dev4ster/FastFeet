@@ -12,6 +12,7 @@ class RecipientDetails extends Model {
         sequelize,
       }
     );
+    return this;
   }
 }
 

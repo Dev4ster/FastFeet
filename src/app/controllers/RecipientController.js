@@ -5,17 +5,17 @@ import SequelizeDeletePromise from '../utils/SequelizeDeletePromise';
 
 class RecipientController {
   async index(req, res) {
-    Recipient.belongsTo(RecipientDetails, {
-      foreignKey: 'id_recipient_details',
-      sourceKey: 'id',
-    });
-    RecipientDetails.hasMany(Recipient, {
-      foreignKey: 'id_recipient_details',
-    });
+    // Recipient.belongsTo(RecipientDetails, {
+    //   foreignKey: 'id_recipient_details',
+    //   sourceKey: 'id',
+    // });
+    // RecipientDetails.hasMany(Recipient, {
+    //   foreignKey: 'id_recipient_details',
+    // });
 
     const allRecipients = await Recipient.findAll({
       order: [['created_at', 'DESC']],
-      include: [RecipientDetails],
+      include: [{ model: RecipientDetails, as: 'detail' }],
     });
     return res.json(allRecipients);
   }
@@ -215,21 +215,11 @@ class RecipientController {
 
   async show(req, res) {
     const { id } = req.params;
-    try {
-      Recipient.belongsTo(RecipientDetails, {
-        foreignKey: 'id_recipient_details',
-        sourceKey: 'id',
-      });
-      RecipientDetails.hasMany(Recipient, {
-        foreignKey: 'id_recipient_details',
-      });
-      const recipient = await Recipient.findByPk(id, {
-        include: [RecipientDetails],
-      });
-      return res.json(recipient);
-    } catch (e) {
-      return res.json(e);
-    }
+
+    const recipient = await Recipient.findByPk(id, {
+      include: [{ model: RecipientDetails, as: 'detail' }],
+    });
+    return res.json(recipient);
   }
 }
 
