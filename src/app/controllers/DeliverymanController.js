@@ -43,14 +43,14 @@ class DeliverymanController {
         .json({ error: 'this id_avatar is not existis in database' });
     }
     /**
-     * check if id_avatar is used per other user minus the user
+     * check if id_avatar is used per other user
      */
 
-    if (await Deliveryman.findOne({ where: { id_avatar } })) {
+    if (id_avatar && (await Deliveryman.findOne({ where: { id_avatar } }))) {
       return res.status(400).json({ error: 'this avatar is already in use' });
     }
-    // const deliveryman = await Deliveryman.create(req.body);
-    return res.json(0);
+    const deliveryman = await Deliveryman.create(req.body);
+    return res.json(deliveryman);
   }
 
   async index(req, res) {
@@ -93,10 +93,14 @@ class DeliverymanController {
     /**
      * Check if email is already in use
      */
-    const DeliverymanExists = await Deliveryman.findOne({
-      where: { email },
-    });
-    if (email && email !== deliveryman.email && DeliverymanExists) {
+
+    if (
+      email &&
+      email !== deliveryman.email &&
+      (await Deliveryman.findOne({
+        where: { email },
+      }))
+    ) {
       return res
         .status(400)
         .json({ error: 'this email is already being used' });
@@ -111,13 +115,14 @@ class DeliverymanController {
         .json({ error: 'this id_avatar is not existis in database' });
     }
     /**
-     * check if id_avatar is used per other user
+     * check if id_avatar is used per other user minus the user req
      */
 
     if (
-      await Deliveryman.findOne({
+      id_avatar &&
+      (await Deliveryman.findOne({
         where: { id_avatar, id: { [Op.ne]: deliveryman.id } },
-      })
+      }))
     ) {
       return res.status(400).json({ error: 'this avatar is already in use' });
     }

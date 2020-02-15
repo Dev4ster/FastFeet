@@ -21,7 +21,7 @@ module.exports = {
       },
       signature_id: {
         type: Sequelize.INTEGER,
-        allowNull: false,
+        allowNull: true,
         foreignKey: true,
         references: { model: 'files', key: 'id' },
       },

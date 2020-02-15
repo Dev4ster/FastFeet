@@ -12,6 +12,8 @@ import permissonMiddleware from './app/middlewares/permission';
 import FileController from './app/controllers/FileController';
 import DeliverymanController from './app/controllers/DeliverymanController';
 import OrdersController from './app/controllers/OrdersController';
+import DeliveryController from './app/controllers/DeliveryController';
+import DeliveryProblemsController from './app/controllers/DeliveryProblemsController';
 
 const upload = multer(multerConfig);
 
@@ -24,6 +26,12 @@ routes.use(authMiddleware);
 
 routes.put('/users', UserController.update);
 
+// Deliveryman viewer
+routes.get('/deliveryman/:id/deliveries', DeliveryController.index);
+routes.put('/deliveryman/:id/deliveries/:id_order', DeliveryController.update);
+routes.post('/delivery/:id/problems', DeliveryProblemsController.store);
+routes.get('/delivery/:id/problems', DeliveryProblemsController.show);
+// IS ADMIN MIDDLEWARE
 routes.use(permissonMiddleware);
 
 // Details
@@ -48,7 +56,10 @@ routes.post('/deliveryman', DeliverymanController.store);
 routes.get('/deliveryman', DeliverymanController.index);
 routes.put('/deliveryman/:id?', DeliverymanController.update);
 routes.delete('/deliveryman/:id?', DeliverymanController.delete);
-// Orders
-routes.post('/orders', OrdersController.store);
 
+// Orders
+routes.get('/orders', OrdersController.index);
+routes.post('/orders', OrdersController.store);
+routes.put('/orders/:id', OrdersController.update);
+routes.delete('/orders/:id', OrdersController.delete);
 export default routes;
