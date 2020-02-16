@@ -4,6 +4,8 @@ import Recipient from '../models/Recipient';
 import RecipientDetails from '../models/RecipientDetails';
 import File from '../models/File';
 import Deliveryman from '../models/Deliveryman';
+import Queue from '../../lib/Queue';
+import OrderNewMail from '../jobs/OrderNewMail';
 
 class OrdersController {
   async store(req, res) {
@@ -41,7 +43,20 @@ class OrdersController {
       return res.status(400).json({ error: 'deliveryman not found' });
     }
 
-    const order = await Orders.create(req.body);
+    const orderNew = await Orders.create(req.body);
+
+    const order = await Orders.findOne({
+      where: { id: orderNew.id },
+      include: [
+        { model: Recipient, as: 'recipient' },
+        { model: Deliveryman, as: 'deliveryman' },
+      ],
+    });
+
+    await Queue.add(OrderNewMail.key, {
+      order,
+    });
+
     return res.json(order);
   }
 

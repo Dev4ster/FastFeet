@@ -29,8 +29,11 @@ routes.put('/users', UserController.update);
 // Deliveryman viewer
 routes.get('/deliveryman/:id/deliveries', DeliveryController.index);
 routes.put('/deliveryman/:id/deliveries/:id_order', DeliveryController.update);
+
+// Deliveryman viewer problems
 routes.post('/delivery/:id/problems', DeliveryProblemsController.store);
 routes.get('/delivery/:id/problems', DeliveryProblemsController.show);
+
 // IS ADMIN MIDDLEWARE
 routes.use(permissonMiddleware);
 
@@ -62,4 +65,10 @@ routes.get('/orders', OrdersController.index);
 routes.post('/orders', OrdersController.store);
 routes.put('/orders/:id', OrdersController.update);
 routes.delete('/orders/:id', OrdersController.delete);
+
+// Problems viewer
+
+routes.get('/delivery/problems', DeliveryProblemsController.index);
+routes.put('/problems/:id/cancel-delivery', DeliveryProblemsController.update);
+
 export default routes;

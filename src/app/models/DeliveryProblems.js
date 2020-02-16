@@ -6,18 +6,17 @@ class DeliveryProblems extends Model {
       {
         description: Sequelize.STRING,
       },
-      { sequelize }
+      { sequelize, tableName: 'delivery_problems' }
     );
-    this.removeAttribute('id');
+
     return this;
   }
 
   static associate(models) {
-    this.belongsTo(models.Orders, {
-      key: 'delivery_id',
-      targetKey: 'id',
-      as: 'problems',
-    });
+    // this.belongsTo(models.Orders, {
+    //   foreignKey: 'delivery_id',
+    //   as: 'problems',
+    // });
   }
 }
 

@@ -1,4 +1,5 @@
 import Sequelize, { Model } from 'sequelize';
+import { parseISO } from 'date-fns';
 
 class Orders extends Model {
   static init(sequelize) {
@@ -9,7 +10,7 @@ class Orders extends Model {
         start_date: Sequelize.DATE,
         end_date: Sequelize.DATE,
       },
-      { sequelize }
+      { sequelize, tableName: 'orders' }
     );
 
     return this;
@@ -32,8 +33,14 @@ class Orders extends Model {
     });
 
     this.hasMany(models.DeliveryProblems, {
+      foreignKey: 'delivery_id',
       as: 'problems',
     });
+  }
+
+  async cancelOrder({ canceled_at }) {
+    const res = await this.update(parseISO(canceled_at));
+    return res;
   }
 }
 
