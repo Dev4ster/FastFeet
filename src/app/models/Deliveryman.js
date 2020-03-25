@@ -6,6 +6,13 @@ class Deliveryman extends Model {
       {
         name: Sequelize.STRING,
         email: Sequelize.INTEGER,
+        deliveryman_letters: {
+          type: Sequelize.VIRTUAL,
+          get() {
+            const [first, second] = this.name.split(' ');
+            return first.split('')[0] + second.split('')[0];
+          },
+        },
       },
       {
         sequelize,

@@ -1,21 +1,22 @@
 import * as Yup from 'yup';
+import { Op } from 'sequelize';
 import Recipient from '../models/Recipient';
 import RecipientDetails from '../models/RecipientDetails';
 import SequelizeDeletePromise from '../utils/SequelizeDeletePromise';
 
 class RecipientController {
   async index(req, res) {
-    // Recipient.belongsTo(RecipientDetails, {
-    //   foreignKey: 'id_recipient_details',
-    //   sourceKey: 'id',
-    // });
-    // RecipientDetails.hasMany(Recipient, {
-    //   foreignKey: 'id_recipient_details',
-    // });
+    const { recipientName } = req.query;
+
+    const nameFilter = recipientName
+      ? { name: { [Op.iLike]: `%${recipientName}%` } }
+      : {};
+
+    const filter = { ...nameFilter };
 
     const allRecipients = await Recipient.findAll({
       order: [['created_at', 'DESC']],
-      include: [{ model: RecipientDetails, as: 'detail' }],
+      include: [{ model: RecipientDetails, as: 'detail', where: filter }],
     });
     return res.json(allRecipients);
   }

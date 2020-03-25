@@ -119,6 +119,7 @@ class DeliveryController {
         start_date: {
           [Op.between]: [startOfDay(new Date()), endOfDay(new Date())],
         },
+        deliveryman_id,
       },
     });
 

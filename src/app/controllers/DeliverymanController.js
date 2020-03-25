@@ -54,11 +54,15 @@ class DeliverymanController {
   }
 
   async index(req, res) {
+    const { name } = req.query;
+    const nameFilter = name ? { name: { [Op.ilike]: `%${name}%` } } : {};
+    const filter = Object.assign(nameFilter);
     const deliverymans = await Deliveryman.findAll({
       include: [
         { model: File, as: 'avatar', attributes: ['id', 'url', 'path'] },
       ],
       attributes: ['id', 'name', 'email'],
+      where: filter,
     });
     return res.json(deliverymans);
   }

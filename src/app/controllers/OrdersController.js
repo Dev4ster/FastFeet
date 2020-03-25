@@ -1,4 +1,5 @@
 import * as Yup from 'yup';
+import { Op } from 'sequelize';
 import Orders from '../models/Orders';
 import Recipient from '../models/Recipient';
 import RecipientDetails from '../models/RecipientDetails';
@@ -117,8 +118,34 @@ class OrdersController {
   }
 
   async index(req, res) {
+    const { productName, page = 1 } = req.query;
+    // Filter
+    const productFilter = productName
+      ? { product: { [Op.iLike]: `%${productName}%` } }
+      : {};
+    const filter = Object.assign(productFilter);
+
+    // Pagination
+
+    if (page <= 0)
+      return res.status(400).json({ error: 'the page cannot be less than 0' });
+
+    const pageSize = 5;
+    const offset = (page - 1) * pageSize;
+    const limit = pageSize;
+    const countOrder = await Orders.count({ where: filter, offset, limit });
+
+    const totalPages = Math.ceil(countOrder / pageSize);
+
     const allOrders = await Orders.findAll({
-      attributes: ['id', 'product'],
+      attributes: [
+        'id',
+        'product',
+        'canceled_at',
+        'start_date',
+        'end_date',
+        'status_order',
+      ],
       include: [
         {
           model: Recipient,
@@ -143,12 +170,24 @@ class OrdersController {
         {
           model: Deliveryman,
           as: 'deliveryman',
-          attributes: ['id', 'name', 'email'],
+          attributes: ['id', 'name', 'email', 'deliveryman_letters'],
         },
         { model: File, as: 'signature', attributes: ['id', 'url', 'path'] },
       ],
+      where: filter,
+      order: [['createdAt', 'DESC']],
+      offset,
+      limit,
     });
-    return res.json(allOrders);
+    return res.json({
+      pagination: {
+        totalCount: countOrder,
+        pageSize,
+        totalPages,
+        currentPage: Number(page),
+      },
+      nodes: [...allOrders],
+    });
   }
 
   async delete(req, res) {
